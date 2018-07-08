@@ -1,0 +1,4 @@
+application:
+  filePathEn: src/test/resources/questions/data.csv
+  filePathRu: src/test/resources/questions/data_ru.csv
+  defaultLocale: en
