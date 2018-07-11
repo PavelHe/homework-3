@@ -18,7 +18,7 @@ public class TestConfiguration {
 
     @Bean
     public StudentController testStudentController() {
-        return new StudentControllerImpl(testQuestionService(), defaultLocale);
+        return new StudentControllerImpl(testQuestionService(), defaultLocale, null);
     }
 
     @Bean

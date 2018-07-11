@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.github.pavelhe.model.*;
 import com.github.pavelhe.service.*;
+import com.github.pavelhe.shell.*;
 import com.github.pavelhe.utils.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
@@ -14,13 +15,15 @@ public class StudentControllerImpl implements StudentController {
 
     @Autowired
     private MessageSourceWrapper messageSource;
+    private StudentCommand command;
     private final QuestionService questions;
     private String defaultLocale;
 
     public StudentControllerImpl(@Qualifier("questionServiceImpl") QuestionService questions,
-                                 @Value("${defaultLocale}") String defaultLocale) {
+                                 @Value("${defaultLocale}") String defaultLocale, StudentCommand command) {
         this.questions = questions;
         this.defaultLocale = defaultLocale;
+        this.command = command;
     }
 
     @Override
@@ -29,9 +32,9 @@ public class StudentControllerImpl implements StudentController {
         locale = validateLocale(locale);
 
         List<Question> questionList = questions.getQuestionsFromCSV();
-        Student student = null;
+        Student student = createUserFromShellCommand(command);
         try {
-            student = createStudent(reader, locale);
+            student = student == null ? createStudent(reader, locale) : student;
             for (Question question : questionList) {
                 System.out.println(messageSource.getMessage("text.info", locale));
                 System.out.println(question.getText());
@@ -83,6 +86,12 @@ public class StudentControllerImpl implements StudentController {
 
     private Locale validateLocale(Locale locale) {
         return locale == null ? Locale.forLanguageTag(defaultLocale) : locale;
+    }
+
+    private Student createUserFromShellCommand(StudentCommand studentCommand) {
+        if (studentCommand == null)
+            return null;
+        return studentCommand.getStudentFromShellCommand();
     }
 
     private void closeReader(BufferedReader reader) {
