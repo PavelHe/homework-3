@@ -15,15 +15,15 @@ public class StudentControllerImpl implements StudentController {
 
     @Autowired
     private MessageSourceWrapper messageSource;
-    private StudentCommand command;
+    private StudentService studentService;
     private final QuestionService questions;
     private String defaultLocale;
 
     public StudentControllerImpl(@Qualifier("questionServiceImpl") QuestionService questions,
-                                 @Value("${defaultLocale}") String defaultLocale, StudentCommand command) {
+                                 @Value("${defaultLocale}") String defaultLocale, StudentService studentService) {
         this.questions = questions;
         this.defaultLocale = defaultLocale;
-        this.command = command;
+        this.studentService = studentService;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class StudentControllerImpl implements StudentController {
         locale = validateLocale(locale);
 
         List<Question> questionList = questions.getQuestionsFromCSV();
-        Student student = createUserFromShellCommand(command);
+        Student student = studentService.getStudent();
         try {
             student = student == null ? createStudent(reader, locale) : student;
             for (Question question : questionList) {
@@ -86,12 +86,6 @@ public class StudentControllerImpl implements StudentController {
 
     private Locale validateLocale(Locale locale) {
         return locale == null ? Locale.forLanguageTag(defaultLocale) : locale;
-    }
-
-    private Student createUserFromShellCommand(StudentCommand studentCommand) {
-        if (studentCommand == null)
-            return null;
-        return studentCommand.getStudentFromShellCommand();
     }
 
     private void closeReader(BufferedReader reader) {

@@ -18,7 +18,7 @@ public class TestConfiguration {
 
     @Bean
     public StudentController testStudentController() {
-        return new StudentControllerImpl(testQuestionService(), defaultLocale, null);
+        return new StudentControllerImpl(testQuestionService(), defaultLocale, testStudentService());
     }
 
     @Bean
@@ -42,5 +42,10 @@ public class TestConfiguration {
     @Bean
     public MessageSourceWrapper messageSourceWrapper() {
         return new MessageSourceWrapperImpl(messageSource());
+    }
+
+    @Bean
+    public StudentService testStudentService() {
+        return new StudentServiceImpl();
     }
 }
